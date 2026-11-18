@@ -83,6 +83,11 @@ on post-fs-data
     write /sys/kernel/cnss/fs_ready 1
 
 on early-boot
+    # Android's init.rc turns panic_on_oops on. Leave it off so an oops
+    # kills the task and its backtrace reaches the log, instead of
+    # resetting the phone in the middle of a call.
+    write /proc/sys/kernel/panic_on_oops 0
+
     start vendor.sensors
     verity_update_state
     # LiveDisplay adaptive backlight (panel CABC), before the HAL starts with class hal
