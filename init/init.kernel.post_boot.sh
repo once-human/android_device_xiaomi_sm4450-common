@@ -49,9 +49,14 @@ function configure_zram_parameters() {
 		let zRamSizeMB=4096
 	fi
 
-	# And enable lz4 zram compression for Go targets.
-	low_ram=`getprop ro.config.low_ram`
+	# lz4 for pages going out: the cheapest to compress and to fault back
+	# in. zstd as the secondary algorithm: init.sm4450.zram.sh repacks the
+	# pages that stay idle with it, which fits about a fifth more into the
+	# same RAM. Both have to be set before the disksize.
 	echo lz4 > /sys/block/zram0/comp_algorithm
+	if [ -f /sys/block/zram0/recomp_algorithm ]; then
+		echo "algo=zstd priority=1" > /sys/block/zram0/recomp_algorithm
+	fi
 
 	if [ -f /sys/block/zram0/disksize ]; then
 		if [ -f /sys/block/zram0/use_dedup ]; then
@@ -119,21 +124,24 @@ function configure_memory_parameters() {
 	configure_zram_parameters
 	configure_read_ahead_kb_values
 
-	# O19 ExtM
-	ProductName=`getprop ro.product.name`
-	if [ "$ProductName" == "mist" ]; then
-		echo 150 > /proc/sys/vm/swappiness
-	else
-		echo 100 > /proc/sys/vm/swappiness
-	fi
+	# mq-deadline keeps reads ahead of writeback on UFS, so app launches
+	# don't queue behind background writes.
+	for device in /sys/block/sd*; do
+		echo mq-deadline > "$device/queue/scheduler"
+	done
+
+	# Swap is zram, so faulting anon pages back is far cheaper than reading
+	# file pages again from storage. Lean towards swapping anon, like
+	# Xiaomi does on mist: lmkd killed apps with 1-2 GB of zram still free.
+	echo 150 > /proc/sys/vm/swappiness
 
 	# Disable periodic kcompactd wakeups. We do not use THP, so having many
 	# huge pages is not as necessary.
 	echo 0 > /proc/sys/vm/compaction_proactiveness
 
-	## Goal is to allow all allocations to use THP whilst minimizing allocaiton delays
-	# Allow all eligibe page faults to use THP
-	echo always > /sys/kernel/mm/transparent_hugepage/enabled
+	# Only give THP to the apps that ask for it with madvise(): always-on
+	# THP bloats every process and makes lmkd kill sooner on 4-8 GB.
+	echo madvise > /sys/kernel/mm/transparent_hugepage/enabled
 	# Prevent page faults on THP-elgible VMAs from causing reclaim or compaction
 	echo never > /sys/kernel/mm/transparent_hugepage/defrag
 

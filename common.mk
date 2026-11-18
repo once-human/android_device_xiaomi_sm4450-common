@@ -206,6 +206,7 @@ PRODUCT_PACKAGES += \
     init.qcom.post_boot.sh \
     init.qcom.rc \
     init.qcom.recovery.rc \
+    init.sm4450.zram.sh \
     init.target.rc \
     system_dlkm_modprobe.sh \
     ueventd.qcom.rc \

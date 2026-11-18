@@ -45,6 +45,12 @@ sh_binary {
 }
 
 sh_binary {
+    name: "init.sm4450.zram.sh",
+    src: "init.sm4450.zram.sh",
+    vendor: true,
+}
+
+sh_binary {
     name: "init.qcom.post_boot.sh",
     src: "init.qcom.post_boot.sh",
     vendor: true,

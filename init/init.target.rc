@@ -149,6 +149,9 @@ service vendor.per_proxy /vendor/bin/pm-proxy
 
 
 on property:sys.boot_completed=1
+    # Recompress idle zram pages with zstd, see init.sm4450.zram.sh
+    exec_background u:r:vendor_qti_init_shell:s0 -- /vendor/bin/init.sm4450.zram.sh
+
     # Charger input suspend (LineageOS Health charging control); the node appears once the ADSP charger is up
     chown system system /sys/class/qcom-battery/input_suspend
     chmod 0664 /sys/class/qcom-battery/input_suspend
