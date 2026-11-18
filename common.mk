@@ -139,6 +139,15 @@ PRODUCT_COPY_FILES += \
 # Dalvik
 $(call inherit-product, frameworks/native/build/phone-xhdpi-4096-dalvik-heap.mk)
 
+PRODUCT_VENDOR_PROPERTIES += \
+    dalvik.vm.heapgrowthlimit=256m \
+    dalvik.vm.heapmaxfree=8m \
+    dalvik.vm.heaptargetutilization=0.75
+
+# LMKD: free the most memory per kill, so one kill is enough
+PRODUCT_VENDOR_PROPERTIES += \
+    ro.lmk.kill_heaviest_task=true
+
 # DEBUGFS
 PRODUCT_SET_DEBUGFS_RESTRICTIONS := true
 
