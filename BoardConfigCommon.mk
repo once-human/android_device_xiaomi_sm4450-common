@@ -39,6 +39,13 @@ TARGET_NEEDS_DTBOIMAGE := true
 TARGET_FS_CONFIG_GEN := $(COMMON_PATH)/configs/config.fs
 
 # Kernel
+# Lazy RCU batches callbacks while the CPUs idle (the GKI builds it but
+# keeps it off by default), and fw_devlink stops holding supplier
+# sync_state forever when a consumer driver never probes.
+BOARD_KERNEL_CMDLINE += \
+    fw_devlink.sync_state=timeout \
+    rcutree.enable_rcu_lazy=1
+
 BOARD_BOOTCONFIG := \
     androidboot.hardware=qcom \
     androidboot.memcg=1 \
