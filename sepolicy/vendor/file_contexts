@@ -15,3 +15,6 @@
 
 # Gralloc (HIDL, for CamX)
 /vendor/bin/hw/vendor\.qti\.hardware\.display\.allocator@4\.0-service    u:object_r:hal_graphics_allocator_default_exec:s0
+
+# Init scripts
+/vendor/bin/init\.sm4450\.zram\.sh                u:object_r:vendor_qti_init_shell_exec:s0

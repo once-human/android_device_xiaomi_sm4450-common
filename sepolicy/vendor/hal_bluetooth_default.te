@@ -1,0 +1,2 @@
+# The HAL keeps the BD address in ro.vendor.ril.oem.btmac when it starts
+set_prop(hal_bluetooth_default, vendor_radio_prop)

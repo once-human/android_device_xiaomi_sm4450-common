@@ -1,2 +1,6 @@
 allow vendor_qti_init_shell proc_page_cluster:file w_file_perms;
 allow vendor_qti_init_shell vendor_sysfs_swap:file w_file_perms;
+
+# I/O scheduler and read-ahead of the UFS LUNs
+allow vendor_qti_init_shell sysfs:file w_file_perms;
+allow vendor_qti_init_shell vendor_sysfs_scsi_target:file w_file_perms;
