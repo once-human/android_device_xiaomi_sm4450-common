@@ -148,6 +148,17 @@ PRODUCT_VENDOR_PROPERTIES += \
 PRODUCT_VENDOR_PROPERTIES += \
     ro.lmk.kill_heaviest_task=true
 
+# Dexpreopt
+# Compile SystemUI and Settings fully ahead of time, so the shade, Quick
+# Settings and Settings never wait on the JIT, also right after an update.
+PRODUCT_DEXPREOPT_SPEED_APPS += \
+    Settings \
+    SystemUI
+PRODUCT_SYSTEM_SERVER_COMPILER_FILTER := speed-profile
+
+PRODUCT_VENDOR_PROPERTIES += \
+    dalvik.vm.systemuicompilerfilter=speed
+
 # DEBUGFS
 PRODUCT_SET_DEBUGFS_RESTRICTIONS := true
 
